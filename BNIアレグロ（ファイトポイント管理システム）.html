@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BNI アレグロ ファイトポイント</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=Bebas+Neue&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --surface2: #1a1a26;
+    --border: #2a2a40;
+    --accent: #e8c840;
+    --accent2: #ff6b35;
+    --accent3: #4ecdc4;
+    --text: #f0f0f8;
+    --text-muted: #888899;
+    --red: #ff4d6d;
+    --green: #4ecdc4;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* HEADER */
+  header {
+    background: linear-gradient(135deg, #0d0d18 0%, #1a1030 50%, #0d0d18 100%);
+    border-bottom: 2px solid var(--accent);
+    padding: 24px 32px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .header-title {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+
+  .header-title .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.4rem;
+    color: var(--accent);
+    letter-spacing: 3px;
+    line-height: 1;
+  }
+
+  .header-title .sub {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-weight: 300;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .week-nav {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .week-nav button {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    width: 34px;
+    height: 34px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.15s;
+  }
+  .week-nav button:hover { border-color: var(--accent); color: var(--accent); }
+
+  .week-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--accent);
+    text-align: center;
+    min-width: 130px;
+  }
+
+  .week-label .week-num {
+    font-size: 1.1rem;
+    font-weight: 500;
+  }
+
+  /* MAIN */
+  main {
+    padding: 24px 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  /* RANKING */
+  .ranking-section { margin-bottom: 28px; }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: 3px;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+    text-transform: uppercase;
+  }
+
+  .ranking-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 10px;
+  }
+
+  .rank-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s, border-color 0.2s;
+    cursor: default;
+  }
+
+  .rank-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--border);
+    transition: background 0.3s;
+  }
+
+  .rank-card.rank-1::before { background: linear-gradient(90deg, #ffd700, #ffaa00); }
+  .rank-card.rank-2::before { background: linear-gradient(90deg, #c0c0c0, #a0a0a0); }
+  .rank-card.rank-3::before { background: linear-gradient(90deg, #cd7f32, #a05020); }
+
+  .rank-badge {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    line-height: 1;
+    color: var(--border);
+    position: absolute;
+    top: 10px; right: 14px;
+  }
+  .rank-card.rank-1 .rank-badge { color: rgba(255,215,0,0.3); }
+  .rank-card.rank-2 .rank-badge { color: rgba(192,192,192,0.3); }
+  .rank-card.rank-3 .rank-badge { color: rgba(205,127,50,0.3); }
+
+  .rank-name { font-size: 0.95rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .rank-leaders { font-size: 0.72rem; color: var(--text-muted); margin-bottom: 8px; }
+  .rank-total { font-family: 'DM Mono', monospace; font-size: 1.6rem; font-weight: 500; color: var(--accent); }
+  .rank-total span { font-size: 0.7rem; color: var(--text-muted); font-family: 'Noto Sans JP', sans-serif; }
+
+  /* INPUT SECTION */
+  .input-section { margin-bottom: 28px; }
+
+  .buddy-selector { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
+
+  select, input[type="number"], input[type="text"] {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  select:focus, input:focus { border-color: var(--accent); }
+  select { cursor: pointer; }
+
+  /* POINTS TABLE */
+  .points-table {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .pt-header {
+    background: var(--surface2);
+    padding: 12px 20px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 80px;
+    gap: 10px;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .pt-row {
+    padding: 14px 20px;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 80px;
+    gap: 10px;
+    align-items: center;
+    border-bottom: 1px solid rgba(42,42,64,0.5);
+    transition: background 0.15s;
+  }
+  .pt-row:last-child { border-bottom: none; }
+  .pt-row:hover { background: rgba(255,255,255,0.02); }
+
+  .pt-action { font-size: 0.88rem; color: var(--text); }
+  .pt-action .badge {
+    display: inline-block;
+    background: rgba(232,200,64,0.15);
+    color: var(--accent);
+    font-size: 0.72rem;
+    padding: 2px 8px;
+    border-radius: 20px;
+    margin-left: 6px;
+    font-family: 'DM Mono', monospace;
+  }
+  .pt-action .note { font-size: 0.72rem; color: var(--text-muted); display: block; margin-top: 2px; }
+  .pt-points { font-family: 'DM Mono', monospace; font-size: 0.9rem; color: var(--accent3); font-weight: 500; }
+  .pt-input input { width: 70px; text-align: center; padding: 7px 10px; }
+  .pt-subtotal { font-family: 'DM Mono', monospace; font-size: 1rem; color: var(--accent); font-weight: 500; text-align: right; }
+
+  /* Submit area */
+  .submit-area {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    background: var(--surface2);
+    border-top: 1px solid var(--border);
+    gap: 16px;
+  }
+
+  .submit-total { font-size: 0.9rem; color: var(--text-muted); }
+  .submit-total strong { font-family: 'DM Mono', monospace; font-size: 1.4rem; color: var(--accent); margin-left: 8px; }
+
+  .btn-submit {
+    background: var(--accent);
+    color: #000;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 8px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 1px;
+  }
+  .btn-submit:hover { background: #f5d84a; transform: translateY(-1px); box-shadow: 0 4px 20px rgba(232,200,64,0.3); }
+  .btn-submit:active { transform: translateY(0); }
+
+  /* 修正モードバナー */
+  .edit-mode-bar {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    background: rgba(232,200,64,0.07);
+    border: 1px solid rgba(232,200,64,0.4);
+    border-radius: 8px;
+    padding: 10px 16px;
+    margin-bottom: 14px;
+    font-size: 0.85rem;
+    flex-wrap: wrap;
+  }
+  .edit-mode-bar.active { display: flex; }
+  .edit-mode-bar .em-label { color: var(--accent); font-weight: 700; }
+  .edit-mode-bar .em-info { color: var(--text-muted); }
+  .edit-mode-bar .em-cancel {
+    margin-left: auto;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 4px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.78rem;
+    font-family: 'Noto Sans JP', sans-serif;
+    transition: all 0.15s;
+  }
+  .edit-mode-bar .em-cancel:hover { border-color: var(--red); color: var(--red); }
+
+  /* WEEKLY LOG */
+  .history-section { margin-bottom: 28px; }
+
+  .history-table {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .ht-header {
+    background: var(--surface2);
+    padding: 10px 16px;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    display: grid;
+    grid-template-columns: 130px 1fr repeat(6, 70px) 80px;
+    gap: 6px;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .ht-row {
+    padding: 12px 16px;
+    display: grid;
+    grid-template-columns: 130px 1fr repeat(6, 70px) 80px;
+    gap: 6px;
+    align-items: center;
+    border-bottom: 1px solid rgba(42,42,64,0.4);
+    transition: background 0.15s;
+    cursor: pointer;
+  }
+  .ht-row:last-child { border-bottom: none; }
+  .ht-row:hover { background: rgba(232,200,64,0.04); }
+  .ht-row.is-editing { background: rgba(232,200,64,0.07); border-left: 3px solid var(--accent); }
+
+  .ht-week { font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--accent3); }
+  .ht-buddy { font-size: 0.85rem; font-weight: 500; color: var(--text); }
+  .ht-val { font-family: 'DM Mono', monospace; font-size: 0.82rem; color: var(--text-muted); text-align: center; }
+  .ht-val.nonzero { color: var(--accent3); }
+  .ht-weekly { font-family: 'DM Mono', monospace; font-size: 0.9rem; color: var(--accent); font-weight: 500; text-align: right; }
+  .ht-cumul { font-family: 'DM Mono', monospace; font-size: 1rem; color: var(--accent); font-weight: 700; text-align: right; }
+
+  .ht-hint {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    padding: 8px 16px;
+    background: var(--surface2);
+    border-top: 1px solid var(--border);
+    text-align: center;
+    letter-spacing: 0.5px;
+  }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    background: var(--surface2);
+    border: 1px solid var(--accent);
+    color: var(--text);
+    padding: 14px 22px;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    transform: translateX(120%);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index: 999;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  }
+  .toast.show { transform: translateX(0); }
+  .toast .t-pts { color: var(--accent); font-family: 'DM Mono', monospace; font-size: 1.1rem; font-weight: 600; }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    header { flex-direction: column; align-items: flex-start; gap: 12px; padding: 16px; }
+    .ht-header, .ht-row { grid-template-columns: 90px 1fr repeat(3, 55px) 65px; font-size: 0.72rem; }
+    .ht-header span:nth-child(4), .ht-header span:nth-child(5),
+    .ht-header span:nth-child(6), .ht-header span:nth-child(7),
+    .ht-row > span:nth-child(4), .ht-row > span:nth-child(5),
+    .ht-row > span:nth-child(6), .ht-row > span:nth-child(7) { display: none; }
+    .pt-header, .pt-row { grid-template-columns: 2fr 1fr 1fr 70px; padding: 10px 12px; }
+    main { padding: 16px 12px; }
+  }
+
+  .empty-msg { padding: 32px; text-align: center; color: var(--text-muted); font-size: 0.88rem; }
+
+  .buddy-select-wrap { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .buddy-select-wrap label { font-size: 0.8rem; color: var(--text-muted); white-space: nowrap; }
+  select#buddy-select { min-width: 200px; }
+
+  .bar-wrap { height: 4px; background: var(--border); border-radius: 2px; margin-top: 6px; overflow: hidden; }
+  .bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent3), var(--accent)); border-radius: 2px; transition: width 0.5s ease; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-title">
+    <div class="logo"><span style="color:#e63946;">BNI</span> ALLEGRO</div>
+    <div style="display:flex;flex-direction:column;justify-content:center;gap:3px;">
+      <div class="sub">ファイトポイント管理システム</div>
+      <div style="font-size:0.95rem;color:var(--text);font-weight:500;letter-spacing:0.5px;">仲間とともに夢を必ず掴み取るチャプター <span style="color:var(--accent);font-weight:700;">#マジミチ！</span></div>
+    </div>
+  </div>
+  <div class="week-nav">
+    <button onclick="prevWeek()">‹</button>
+    <div class="week-label">
+      <div class="week-num" id="week-label">---</div>
+      <div id="week-range" style="font-size:0.7rem;color:var(--text-muted);margin-top:2px;"></div>
+    </div>
+    <button onclick="nextWeek()">›</button>
+  </div>
+</header>
+
+<main>
+  <!-- RANKING -->
+  <div class="ranking-section">
+    <div class="section-title">🏆 累計ランキング</div>
+    <div class="ranking-grid" id="ranking-grid"></div>
+  </div>
+
+  <!-- INPUT -->
+  <div class="input-section">
+    <div class="section-title">✏️ ポイント入力</div>
+
+    <!-- 修正モードバナー -->
+    <div class="edit-mode-bar" id="edit-mode-bar">
+      <span class="em-label">修正モード</span>
+      <span class="em-info" id="edit-mode-info"></span>
+      <button class="em-cancel" onclick="cancelEdit()">✕ キャンセル</button>
+    </div>
+
+    <div class="buddy-select-wrap" style="margin-bottom:16px;">
+      <label>バディ選択：</label>
+      <select id="buddy-select">
+        <option value="">-- バディを選択 --</option>
+      </select>
+    </div>
+
+    <div class="points-table">
+      <div class="pt-header">
+        <span>アクション</span>
+        <span>単価(P)</span>
+        <span>件数</span>
+        <span>小計</span>
+      </div>
+      <div id="actions-body"></div>
+      <div class="submit-area">
+        <div class="submit-total">今週の入力ポイント合計 <strong id="input-total">0</strong> P</div>
+        <button class="btn-submit" onclick="submitPoints()">このバディのポイントを登録</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- WEEKLY LOG -->
+  <div class="history-section">
+    <div class="section-title">📋 週次ログ</div>
+    <div class="history-table">
+      <div class="ht-header">
+        <span>週</span>
+        <span>バディ</span>
+        <span style="text-align:center">1on1</span>
+        <span style="text-align:center">研修</span>
+        <span style="text-align:center">交流</span>
+        <span style="text-align:center">ビジター</span>
+        <span style="text-align:center">スポンサー</span>
+        <span style="text-align:center">週計</span>
+        <span style="text-align:right">累計</span>
+      </div>
+      <div id="history-body"></div>
+      <div class="ht-hint">行をクリックすると、そのデータを修正できます</div>
+    </div>
+  </div>
+</main>
+
+<div class="toast" id="toast">
+  <div id="toast-msg">ポイントを登録しました！</div>
+  <div class="t-pts" id="toast-pts"></div>
+</div>
+
+<script>
+// ===== DATA =====
+const BUDDIES = [
+  { id:1,  name:"Hiro's70",       leader:"佐藤滉",    sub:"樋下克麿" },
+  { id:2,  name:"SUN",            leader:"安河内涼介", sub:"藤野善孝" },
+  { id:3,  name:"濃い顔",          leader:"坂本万記雄", sub:"川下陽平" },
+  { id:4,  name:"関西",            leader:"田中文登",  sub:"高山大輔" },
+  { id:5,  name:"ムキムキ",        leader:"末次弘幸",  sub:"市丸龍" },
+  { id:6,  name:"ザ・現場主義",    leader:"岩本裕也",  sub:"小陣隆介" },
+  { id:7,  name:"パルス",          leader:"利島慶昭",  sub:"峰雅紀" },
+  { id:8,  name:"しあわせコミット", leader:"廣田左希子", sub:"飯盛弘康" },
+  { id:9,  name:"アルコバレーノ",  leader:"井上拓哉",  sub:"藤田悠" },
+  { id:10, name:"提案力",          leader:"馬場大介",  sub:"山口真広" },
+  { id:11, name:"うま村",          leader:"村尾祐果",  sub:"野中優吉" },
+];
+
+const ACTIONS = [
+  { key:"one2one",  label:"1to1実施（アレグロメンバー）", pt:10,  note:"6/30までに全員完了で+100P" },
+  { key:"bonus100", label:"1to1全員完了ボーナス",         pt:100, note:"6月30日期限" },
+  { key:"training", label:"トレーニング受講（一般）",      pt:10,  note:"" },
+  { key:"netskill", label:"ネットワーキングスキルTR受講",  pt:20,  note:"" },
+  { key:"accel",    label:"アクセラレーター受講",          pt:20,  note:"" },
+  { key:"basic",    label:"BNIベーシックTR受講",           pt:30,  note:"" },
+  { key:"koukan",   label:"交流会参加（5名以上）",         pt:30,  note:"" },
+  { key:"visitor",  label:"ビジター招待",                  pt:100, note:"スポンサー確定で+200P追加" },
+  { key:"sponsor",  label:"スポンサー確定ボーナス",        pt:200, note:"ビジターがメンバーに" },
+];
+
+const SK = "bni_allegro_";
+
+// ===== WEEK MANAGEMENT =====
+const SEASON_START = new Date("2025-04-28");
+const SEASON_END   = new Date("2025-06-30");
+
+const TOTAL_WEEKS = (() => {
+  const start = new Date(SEASON_START); start.setHours(0,0,0,0);
+  const end   = new Date(SEASON_END);   end.setHours(0,0,0,0);
+  // 6/30が属する週のインデックス + 1 = 総週数
+  return Math.floor((end - start) / (7 * 86400 * 1000)) + 1;
+})();
+
+function getWeekIndex(date) {
+  const d = new Date(date);
+  d.setHours(0, 0, 0, 0);
+  const start = new Date(SEASON_START);
+  start.setHours(0, 0, 0, 0);
+  const diff = d - start;
+  if (diff < 0) return 0;
+  const idx = Math.floor(diff / (7 * 86400 * 1000));
+  // シーズン内ならそのまま、終了後は最終週
+  return idx < TOTAL_WEEKS ? idx : TOTAL_WEEKS - 1;
+}
+
+function getWeekRange(weekIdx) {
+  const start = new Date(SEASON_START.getTime() + weekIdx * 7 * 86400 * 1000);
+  const end   = new Date(start.getTime() + 6 * 86400 * 1000);
+  const fmt = d => `${d.getMonth()+1}/${d.getDate()}`;
+  return { start, end, label: `${fmt(start)}〜${fmt(end)}` };
+}
+
+function getTodayWeekIdx() {
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+  const start = new Date(SEASON_START); start.setHours(0, 0, 0, 0);
+  const end   = new Date(SEASON_END);   end.setHours(0, 0, 0, 0);
+  if (now < start) return 0;
+  if (now > end)   return 0;
+  return getWeekIndex(now);
+}
+
+let currentWeekIdx = getTodayWeekIdx();
+let editMode = false; // 修正モード中かどうか
+
+function prevWeek() {
+  if (currentWeekIdx > 0) { currentWeekIdx--; render(); }
+}
+function nextWeek() {
+  if (currentWeekIdx < TOTAL_WEEKS - 1) { currentWeekIdx++; render(); }
+}
+
+// ===== LOCAL STORAGE =====
+function getData() {
+  const raw = localStorage.getItem(SK + "data");
+  return raw ? JSON.parse(raw) : {};
+}
+
+function saveData(data) {
+  localStorage.setItem(SK + "data", JSON.stringify(data));
+}
+
+function getEntry(buddyId, weekIdx) {
+  const data = getData();
+  return data[`${buddyId}_${weekIdx}`] || {};
+}
+
+function setEntry(buddyId, weekIdx, entry) {
+  const data = getData();
+  data[`${buddyId}_${weekIdx}`] = entry;
+  saveData(data);
+}
+
+function calcWeekPoints(entry) {
+  return ACTIONS.reduce((sum, a) => sum + (entry[a.key] || 0) * a.pt, 0);
+}
+
+function calcCumulPoints(buddyId) {
+  const data = getData();
+  return Object.keys(data)
+    .filter(k => k.startsWith(buddyId + "_"))
+    .reduce((sum, k) => sum + calcWeekPoints(data[k]), 0);
+}
+
+// ===== EDIT MODE =====
+function startEdit(buddyId, weekIdx) {
+  editMode = true;
+  currentWeekIdx = weekIdx;
+
+  // バディ選択を切り替え
+  document.getElementById("buddy-select").value = buddyId;
+
+  // バナー表示
+  const buddy = BUDDIES.find(b => b.id === buddyId);
+  const wr = getWeekRange(weekIdx);
+  document.getElementById("edit-mode-info").textContent =
+    `${buddy.name}（${buddy.leader}） ／ 第${weekIdx+1}週（${wr.label}）`;
+  document.getElementById("edit-mode-bar").classList.add("active");
+
+  renderWeekLabel();
+  renderActionInputs();
+  renderHistory(); // ハイライト更新
+
+  // 入力エリアへスクロール
+  document.querySelector(".input-section").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function cancelEdit() {
+  editMode = false;
+  currentWeekIdx = getTodayWeekIdx();
+  document.getElementById("buddy-select").value = "";
+  document.getElementById("edit-mode-bar").classList.remove("active");
+  render();
+}
+
+// ===== RENDER =====
+function render() {
+  renderWeekLabel();
+  renderRanking();
+  renderActionInputs();
+  renderHistory();
+}
+
+function renderWeekLabel() {
+  const wr = getWeekRange(currentWeekIdx);
+  document.getElementById("week-label").textContent = `第 ${currentWeekIdx + 1} 週`;
+  document.getElementById("week-range").textContent = wr.label;
+}
+
+function renderRanking() {
+  const grid = document.getElementById("ranking-grid");
+  const sorted = BUDDIES.map(b => ({
+    ...b, total: calcCumulPoints(b.id)
+  })).sort((a, b) => b.total - a.total);
+
+  const maxPts = sorted[0]?.total || 1;
+
+  grid.innerHTML = sorted.map((b, i) => {
+    const rankClass = i === 0 ? "rank-1" : i === 1 ? "rank-2" : i === 2 ? "rank-3" : "";
+    const pct = maxPts > 0 ? Math.round(b.total / maxPts * 100) : 0;
+    return `
+      <div class="rank-card ${rankClass}">
+        <div class="rank-badge">${i+1}</div>
+        <div class="rank-name">${b.name}</div>
+        <div class="rank-leaders">${b.leader} / ${b.sub}</div>
+        <div class="rank-total">${b.total.toLocaleString()} <span>P</span></div>
+        <div class="bar-wrap"><div class="bar-fill" style="width:${pct}%"></div></div>
+      </div>
+    `;
+  }).join("");
+}
+
+function renderActionInputs() {
+  const buddyId = parseInt(document.getElementById("buddy-select").value) || 0;
+  const entry = buddyId ? getEntry(buddyId, currentWeekIdx) : {};
+
+  document.getElementById("actions-body").innerHTML = ACTIONS.map(a => {
+    const qty = entry[a.key] || 0;
+    const sub = qty * a.pt;
+    return `
+      <div class="pt-row">
+        <div class="pt-action">
+          ${a.label}
+          <span class="badge">${a.pt}P/件</span>
+          ${a.note ? `<span class="note">${a.note}</span>` : ""}
+        </div>
+        <div class="pt-points">${a.pt} P</div>
+        <div class="pt-input">
+          <input type="number" min="0" value="${qty}" data-key="${a.key}"
+            onchange="updateSubtotal(this)" oninput="updateSubtotal(this)" />
+        </div>
+        <div class="pt-subtotal" id="sub-${a.key}">${sub > 0 ? sub + " P" : "—"}</div>
+      </div>
+    `;
+  }).join("");
+
+  recalcTotal();
+}
+
+function updateSubtotal(input) {
+  const key = input.dataset.key;
+  const action = ACTIONS.find(a => a.key === key);
+  const qty = Math.max(0, parseInt(input.value) || 0);
+  const sub = qty * action.pt;
+  document.getElementById("sub-" + key).textContent = sub > 0 ? sub + " P" : "—";
+  recalcTotal();
+}
+
+function recalcTotal() {
+  let total = 0;
+  document.querySelectorAll("[data-key]").forEach(input => {
+    const action = ACTIONS.find(a => a.key === input.dataset.key);
+    total += Math.max(0, parseInt(input.value) || 0) * action.pt;
+  });
+  document.getElementById("input-total").textContent = total.toLocaleString();
+}
+
+function submitPoints() {
+  const buddyId = parseInt(document.getElementById("buddy-select").value) || 0;
+  if (!buddyId) { alert("バディを選択してください"); return; }
+
+  const entry = {};
+  document.querySelectorAll("[data-key]").forEach(input => {
+    entry[input.dataset.key] = Math.max(0, parseInt(input.value) || 0);
+  });
+
+  const isEdit = editMode;
+  setEntry(buddyId, currentWeekIdx, entry);
+
+  const weekPts = calcWeekPoints(entry);
+  const totalPts = calcCumulPoints(buddyId);
+
+  // 修正モード終了
+  if (editMode) {
+    editMode = false;
+    currentWeekIdx = getTodayWeekIdx();
+    document.getElementById("buddy-select").value = "";
+    document.getElementById("edit-mode-bar").classList.remove("active");
+  }
+
+  showToast(isEdit, weekPts, totalPts);
+  render();
+}
+
+function renderHistory() {
+  const body = document.getElementById("history-body");
+  const data = getData();
+  const editingKey = editMode
+    ? `${document.getElementById("buddy-select").value}_${currentWeekIdx}`
+    : null;
+
+  const rows = [];
+  Object.keys(data).forEach(key => {
+    const [buddyId, weekIdxStr] = key.split("_");
+    const buddy = BUDDIES.find(b => b.id === parseInt(buddyId));
+    if (!buddy) return;
+    const weekIdx = parseInt(weekIdxStr);
+    const entry = data[key];
+    const weekPts = calcWeekPoints(entry);
+    if (weekPts === 0) return;
+    rows.push({ key, buddy, weekIdx, entry, weekPts });
+  });
+
+  rows.sort((a, b) => b.weekIdx - a.weekIdx || a.buddy.id - b.buddy.id);
+
+  if (rows.length === 0) {
+    body.innerHTML = `<div class="empty-msg">まだデータがありません。上のフォームからポイントを入力してください。</div>`;
+    return;
+  }
+
+  body.innerHTML = rows.map(r => {
+    const wr = getWeekRange(r.weekIdx);
+    const cumul = calcCumulPoints(r.buddy.id);
+    const e = r.entry;
+    const isActive = r.key === editingKey;
+
+    const v = (key) => {
+      const val = e[key] || 0;
+      return `<span class="ht-val ${val > 0 ? "nonzero" : ""}">${val > 0 ? val : "—"}</span>`;
+    };
+
+    return `
+      <div class="ht-row ${isActive ? "is-editing" : ""}" onclick="startEdit(${r.buddy.id}, ${r.weekIdx})" title="クリックして修正">
+        <span class="ht-week">第${r.weekIdx+1}週<br><small style="color:var(--text-muted);font-size:0.68rem">${wr.label}</small></span>
+        <span class="ht-buddy">${r.buddy.name}<br><small style="color:var(--text-muted);font-size:0.72rem">${r.buddy.leader}</small></span>
+        ${v("one2one")}
+        ${v("training")}
+        ${v("koukan")}
+        ${v("visitor")}
+        ${v("sponsor")}
+        <span class="ht-weekly">${r.weekPts.toLocaleString()} P</span>
+        <span class="ht-cumul">${cumul.toLocaleString()} P</span>
+      </div>
+    `;
+  }).join("");
+}
+
+function showToast(isEdit, weekPts, totalPts) {
+  const toast = document.getElementById("toast");
+  document.getElementById("toast-msg").textContent = isEdit ? "ポイントを修正しました！" : "ポイントを登録しました！";
+  document.getElementById("toast-pts").textContent = `今週 ${weekPts.toLocaleString()}P ／ 累計 ${totalPts.toLocaleString()}P`;
+  toast.classList.add("show");
+  setTimeout(() => toast.classList.remove("show"), 3000);
+}
+
+// ===== INIT =====
+function init() {
+  const sel = document.getElementById("buddy-select");
+  BUDDIES.forEach(b => {
+    const opt = document.createElement("option");
+    opt.value = b.id;
+    opt.textContent = `${b.id}. ${b.name}（${b.leader} / ${b.sub}）`;
+    sel.appendChild(opt);
+  });
+  sel.addEventListener("change", () => renderActionInputs());
+  render();
+}
+
+init();
+</script>
+</body>
+</html>
